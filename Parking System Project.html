@@ -1,0 +1,354 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<title>Parking System</title>
+<style>
+
+.parkingBox {
+    border: 2px solid black;
+    padding: 20px;
+    width: 850px;
+}
+
+.sectionBox {
+    border: 2px solid black;
+    padding: 15px;
+    width: 350px;
+}
+
+.slot {
+    border: 1px solid black;
+    padding: 15px;
+    margin: 10px auto;   
+    width: 100px;
+    background-color: lightgray; 
+} 
+
+#summaryBox {
+             display:none;
+             border:2px solid black;
+             width:850px;
+             padding:15px;
+             margin-bottom:20px;
+}
+
+.loginBox {
+            width: 300px;
+            margin: 120px auto;
+            padding: 20px;
+            border: 2px solid black;
+            background: white;
+            text-align: center;
+}
+
+</style>
+
+
+</head>
+ 
+
+<body>
+
+
+  <div class="loginBox">
+     <h2>Login Page For Parking System</h2>
+
+     <input type="text" id="username" placeholder="Username"><br><br>
+     <input type="password" id="password" placeholder="Password"><br><br>
+     <button id="loginBtn" type="submit">Login</button>
+     <div id="loginError" style="color:red;font-weight:bold;"></div>
+
+ </div>
+
+<div id="parkingSystem" style="display:none;">
+ 
+    <button id="btn4W">Entry 4W</button> 
+    <button id="btn2W">Entry 2W</button> 
+    <button id="btnSummary">Parking Summary</button>
+    <button id="btnLogout">Logout</button><br><br><br> 
+
+   <div id="entryForm" style="display:none;">
+
+    Name of the Car Owner
+    <input type="text" id="Owner"><br><br>
+
+    Vehicle Number 
+    <input type="text" id="Vehicle">
+
+    <button id="SubmitBtn">Submit</button><br><br>
+    <div id="errorMsg" style="color:red; font-weight:bold;"></div>
+
+</div>
+
+   <div id="summaryBox">
+    <div id="summaryStats"></div><br>
+    <b>Parked Vehicles Details:</b>
+    <div id="vehicleDetails"></div>
+</div>
+
+
+
+<div class="parkingBox">
+
+    <div><b>Parking Area</b></div><br>
+
+    <table>
+        <tr>
+            <td>
+                <div class="sectionBox" id="fourWArea">
+                    <div><b>4W Parking Slot</b></div>
+
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+          
+                </div>
+            </td>
+
+            <td>
+                <div class="sectionBox" id="twoWArea">
+                    <div><b>2W Parking Slot</b></div>
+
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+                    <div class="slot"></div>
+  
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+<script>
+
+class ParkingSystem {
+   constructor() {
+
+   document.getElementsByClassName("loginBox")[0].style.display = "block";
+
+   document.getElementById("parkingSystem").style.display = "none";
+
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+
+    document.getElementById("loginError").innerText = "";
+
+    document.getElementById("entryForm").style.display = "none";
+
+     document.getElementById("summaryBox").style.display = "none";
+    this.entryType = "";
+
+    this.fourWCount = 0;
+    this.twoWCount = 0;
+
+    this.maxSlots = 3;
+
+    this.fourWRate = 50;
+    this.twoWRate = 20;
+
+    this.totalAmount = 0;
+
+   this.addEvents();
+  }
+
+addEvents() {
+
+    document.getElementById("loginBtn").onclick = function () {
+        parkingSystem.login();
+    };
+
+    document.getElementById("btnLogout").onclick = function () {
+        parkingSystem.logout();
+    };
+
+    document.getElementById("btn4W").onclick = function () {
+        parkingSystem.selectEntry("4W");
+    };
+
+    document.getElementById("btn2W").onclick = function () {
+        parkingSystem.selectEntry("2W");
+    };
+
+    document.getElementById("SubmitBtn").onclick = function () {
+        parkingSystem.submitData();
+    };
+
+    document.getElementById("btnSummary").onclick = function () {
+        parkingSystem.parkingSummary();
+    };
+}
+
+selectEntry(type) {
+        this.entryType = type;
+        document.getElementById("entryForm").style.display = "block";
+        document.getElementById("summaryBox").style.display = "none";
+        document.getElementById("Owner").disabled = false;
+        document.getElementById("Vehicle").disabled = false;
+        document.getElementById("SubmitBtn").disabled = false;
+    }
+
+submitData() {
+
+    var name = document.getElementById("Owner").value;
+    var number = document.getElementById("Vehicle").value;
+
+    if (name === "" || number === "") {
+        document.getElementById("errorMsg").innerText =
+          "Please enter both Name and Vehicle Number";
+        return;
+    }
+
+    document.getElementById("errorMsg").innerText = "";
+
+   
+    if (this.entryType === "4W") {
+
+        if (this.fourWCount === this.maxSlots) {
+            document.getElementById("errorMsg").innerText =
+              "4W Parking is Full";
+            return;
+        }
+
+       var fourWSlots = document.getElementById("fourWArea").getElementsByClassName("slot");
+
+        fourWSlots[this.fourWCount].innerText =
+          name + " - " + number;
+
+        fourWSlots[this.fourWCount].style.backgroundColor =
+          "lightgreen";
+
+        this.fourWCount++;
+        this.totalAmount += this.fourWRate;
+    }
+
+   
+    else if (this.entryType === "2W") {
+
+        if (this.twoWCount === this.maxSlots) {
+            document.getElementById("errorMsg").innerText =
+              "2W Parking is Full";
+            return;
+        }
+
+         var twoWSlots = document.getElementById("twoWArea").getElementsByClassName("slot");
+
+        twoWSlots[this.twoWCount].innerText =
+          name + " - " + number;
+
+        twoWSlots[this.twoWCount].style.backgroundColor =
+          "lightblue";
+
+        this.twoWCount++;
+        this.totalAmount += this.twoWRate;
+    }
+
+   
+    document.getElementById("entryForm").style.display = "none";
+
+    document.getElementById("Owner").disabled = true;
+    document.getElementById("Vehicle").disabled = true;
+    document.getElementById("SubmitBtn").disabled = true;
+
+    document.getElementById("Owner").value = "";
+    document.getElementById("Vehicle").value = "";
+  }
+
+
+ parkingSummary() {
+
+    document.getElementById("summaryBox").style.display = "block";
+
+    var fourWAvailable =
+      this.maxSlots - this.fourWCount;
+
+    var twoWAvailable =
+      this.maxSlots - this.twoWCount;
+
+    var totalVehicles =
+      this.fourWCount + this.twoWCount;
+
+    document.getElementById("summaryStats").innerHTML =
+        "4W Parked: " + this.fourWCount + "<br>" +
+        "2W Parked: " + this.twoWCount + "<br><br>" +
+        "4W Available Slots: " + fourWAvailable + "<br>" +
+        "2W Available Slots: " + twoWAvailable + "<br><br>" +
+        "Total Vehicles: " + totalVehicles + "<br>" +
+        "Total Amount Collected: ₹" + this.totalAmount;
+
+    var detailsHTML = "";
+
+   
+    var fourWSlots =
+      document.getElementById("fourWArea").getElementsByClassName("slot");
+
+    for (var i = 0; i < fourWSlots.length; i++) {
+        if (fourWSlots[i].innerText !== "") {
+            detailsHTML += "Owner: " + fourWSlots[i].innerText + "(4W)<br>";
+        }
+    }
+
+   
+    var twoWSlots =
+      document.getElementById("twoWArea").getElementsByClassName("slot");
+
+    for (var j = 0; j < twoWSlots.length; j++) {
+        if (twoWSlots[j].innerText !== "") {
+            detailsHTML += "Owner: " + twoWSlots[j].innerText + "(2W)<br>";
+        }
+    }
+
+    document.getElementById("vehicleDetails").innerHTML =
+      detailsHTML;
+}
+
+
+   login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        if(username === "" || password === "") {
+            document.getElementById("loginError").innerText = "Please enter Username and Password";
+            return;
+        }
+
+        document.getElementById("loginError").innerText = "";
+        document.getElementsByClassName("loginBox")[0].style.display = "none";
+        document.getElementById("parkingSystem").style.display = "block";
+    }
+
+  logout() {
+        document.getElementById("parkingSystem").style.display = "none";
+        document.getElementsByClassName("loginBox")[0].style.display = "block";
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("loginError").innerText = "";
+        document.getElementById("entryForm").style.display = "none";
+        document.getElementById("summaryBox").style.display = "none";
+
+        this.entryType = "";
+        this.fourWCount = 0;
+        this.twoWCount = 0;
+        this.totalAmount = 0;
+
+  var allSlots = document.getElementsByClassName("slot");
+
+  for (var i = 0; i < allSlots.length; i++) {
+    allSlots[i].innerText = "";
+    allSlots[i].style.backgroundColor = "lightgray";
+}
+
+}
+}
+
+ const parkingSystem = new ParkingSystem();
+ console.log(parkingSystem);
+
+
+</script>
+
+</body> 
+</html>
+
+
